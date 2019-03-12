@@ -33,5 +33,16 @@ namespace BusinessIntelligenceLabs.Properties {
                 return ((string)(this["Data_set_1_1_ConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\DataBase\\Dest" +
+            "inationDatabase(1).mdf;Integrated Security=True")]
+        public string DestinationDatabase_1_ConnectionString {
+            get {
+                return ((string)(this["DestinationDatabase_1_ConnectionString"]));
+            }
+        }
     }
 }
