@@ -67,7 +67,7 @@ namespace BusinessIntelligenceLabs
 
         private void splitDates(string rawDate)
         {
-            //Split the date down and assign it to variable for later use
+            //Split the date down and assign it to variable for later use in future 
             string[] arrayDate = rawDate.Split('/');
 
             Int32 Year = Convert.ToInt32(arrayDate[2]);
