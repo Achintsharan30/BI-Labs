@@ -114,7 +114,7 @@
             this.listBoxDatesDimension.Name = "listBoxDatesDimension";
             this.listBoxDatesDimension.Size = new System.Drawing.Size(149, 95);
             this.listBoxDatesDimension.TabIndex = 9;
-            this.listBoxDatesDimension.SelectedIndexChanged += new System.EventHandler(this.listBoxDatesDimension_SelectedIndexChanged_1);
+            
             // 
             // btnBuildFactTable
             // 
@@ -124,7 +124,7 @@
             this.btnBuildFactTable.TabIndex = 10;
             this.btnBuildFactTable.Text = "Build Fact Table";
             this.btnBuildFactTable.UseVisualStyleBackColor = true;
-            this.btnBuildFactTable.Click += new System.EventHandler(this.btnBuildFactTable_Click);
+            
             // 
             // Form1
             // 

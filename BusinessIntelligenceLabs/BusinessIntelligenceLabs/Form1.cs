@@ -22,6 +22,11 @@ namespace BusinessIntelligenceLabs
         }
         private int GetDatesId(string date)
         {
+            // remove the time from the date 
+            var dateSplit = date.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+            //overwrite the original value
+            date = dateSplit[0];
+
             //Split the date down and assign it to variable for later use
             string[] arrayDate = date.Split('/');
 
@@ -53,8 +58,8 @@ namespace BusinessIntelligenceLabs
                     //if there are rows it means the data exists, so updtaes the var!
                     if (reader.HasRows)
                     {
-                        exists = true;
-                        return Convert.ToInt32(reader["id"]);
+                        while (reader.Read())
+                            return Convert.ToInt32(reader["id"]);
                     }
                 }
 
@@ -257,41 +262,55 @@ namespace BusinessIntelligenceLabs
             listBoxDatesDimension.DataSource = DestinationDates;
         }
 
-        private void listBoxDatesDimension_SelectedIndexChanged_1(object sender, EventArgs e)
+
+
+        private void InsertFactTable(Int32 ProductId, Int32 TimeId, Int32 CustomerId, Decimal Sales, Int32 Quantity, Decimal Profit, Decimal Discount)
         {
-
-        }
-
-        private void InsertFactTablen(Int32 ProductId, Int32 TimeId, Int32 CustomerId, Decimal Sales, Int32 Quantity, Decimal Profit, Decimal Discount)
-        {
-            //create the database string
-            string connectionString = Properties.Settings.Default.Data_set_1_1_ConnectionString;
-
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            string connectionStringDestination = Properties.Settings.Default.Data_set_1_1_ConnectionString; //create a connection to the MDF file
+            using (SqlConnection myConnection = new SqlConnection(connectionStringDestination))
             {
-                connection.Open();
-                OleDbDataReader reader = null;
-                OleDbCommand getDates = new OleDbCommand("SELECT ID, [Row ID], [Order ID], [Order Date], [Ship Date]," +
-                    "[Ship Mode], [Customer ID] , [Customer Name], Segment, Country, City, State, [Postal Code], [Product ID]," +
-                    "Region, Category, [Sub-Category], [Product Name], Sales, Quantity, Profit, Discount FROM Sheet1", connection);
+                myConnection.Open();  //open the sql connecton 
+                //check if the data already exists in the database 
+                SqlCommand command = new SqlCommand("SELECT ProductId, TimeId, CustomerId FROM FactTableLabs " +
+                    "WHERE ProductId = @ProductId AND TimeID = @TimeId AND CustomerId = @CustomerId", myConnection);
+                command.Parameters.Add(new SqlParameter("ProductId", ProductId));
+                command.Parameters.Add(new SqlParameter("TimeId", TimeId));
+                command.Parameters.Add(new SqlParameter("CustomerId", CustomerId));
 
-                reader = getDates.ExecuteReader();
-                while (reader.Read())
+                Boolean exists = false;
+                // create a variable and assign it as false by default 
+
+                //run the commant && read the resukt 
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    // get a line of data fro, the source
-                    // get the numeric values
-                    Decimal sales = Convert.ToDecimal(reader["Sales"]);
-                    Int32 quantity = Convert.ToInt32(reader["Quantity"]);
-                    Decimal profit = Convert.ToDecimal(reader["profit"]);
-                    Decimal discount = Convert.ToDecimal(reader["Discount"]);
-                    //get the dimension Ids
-                    Int32 productId = 0;
-                    Int32 timeId = GetDatesId(reader["Order Date"].ToString());
-                    Int32 customerId = 0;
-                    // Insert it into the database 
+                    if (reader.HasRows) exists = true;
+                }
+                if (exists == false)
+                {
+                    SqlCommand insertCommand = new SqlCommand("INSERT INTO FactTableLabs" +
+                        "(ProductId, TimeId, CustomerId, Value, Discount, Profit, Quantity) " +
+                        "VALUES (@ProductId, @TimeId, @CustomerId, @Value, @Discount, @Profit, @Quantity)", myConnection);
+                    insertCommand.Parameters.Add(new SqlParameter("ProductId", ProductId));
+                    insertCommand.Parameters.Add(new SqlParameter("TimeId", TimeId));
+                    insertCommand.Parameters.Add(new SqlParameter("CustomerId", CustomerId));
+                    insertCommand.Parameters.Add(new SqlParameter("Value", Sales));
+                    insertCommand.Parameters.Add(new SqlParameter("Discount", Discount));
+                    insertCommand.Parameters.Add(new SqlParameter("Profit", Profit));
+                    insertCommand.Parameters.Add(new SqlParameter("Quantity", Quantity));
+
+                    int recordAffected = insertCommand.ExecuteNonQuery();
+                    Console.WriteLine("Fact Table Records affected: + recordsAffected");
                 }
             }
+
         }
     }
 }
+
+
+
+
+
+
+
 
